@@ -1,1 +1,1 @@
-Hylang is a lisp-like language that is embedded in Python.
+Hy is a Lisp dialect that translates expressions into Python's abstract syntax tree.

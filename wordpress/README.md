@@ -1,35 +1,105 @@
+# Supported tags and respective `Dockerfile` links
+
+-	[`4.3.1-apache`, `4.3.1`, `4.3-apache`, `4.3`, `4-apache`, `apache`, `4`, `latest` (*apache/Dockerfile*)](https://github.com/docker-library/wordpress/blob/ef064e49ebedfa12cf27e94c58b6ec103ae9b816/apache/Dockerfile)
+-	[`4.3.1-fpm`, `4.3-fpm`, `4-fpm`, `fpm` (*fpm/Dockerfile*)](https://github.com/docker-library/wordpress/blob/ef064e49ebedfa12cf27e94c58b6ec103ae9b816/fpm/Dockerfile)
+
+For more information about this image and its history, please see [the relevant manifest file (`library/wordpress`)](https://github.com/docker-library/official-images/blob/master/library/wordpress). This image is updated via pull requests to [the `docker-library/official-images` GitHub repo](https://github.com/docker-library/official-images).
+
+For detailed information about the virtual/transfer sizes and individual layers of each of the above supported tags, please see [the `wordpress/tag-details.md` file](https://github.com/docker-library/docs/blob/master/wordpress/tag-details.md) in [the `docker-library/docs` GitHub repo](https://github.com/docker-library/docs).
+
 # What is WordPress?
+
 WordPress is a free and open source blogging tool and a content management system (CMS) based on PHP and MySQL, which runs on a web hosting service. Features include a plugin architecture and a template system. WordPress is used by more than 22.0% of the top 10 million websites as of August 2013. WordPress is the most popular blogging system in use on the Web, at more than 60 million websites. The most popular languages used are English, Spanish and Bahasa Indonesia.
 
 > [wikipedia.org/wiki/WordPress](https://en.wikipedia.org/wiki/WordPress)
 
+![logo](https://raw.githubusercontent.com/docker-library/docs/master/wordpress/logo.png)
+
 # How to use this image
 
-    docker run --name some-wordpress --link some-mysql:mysql -d wordpress
+```console
+$ docker run --name some-wordpress --link some-mysql:mysql -d wordpress
+```
 
 The following environment variables are also honored for configuring your WordPress instance:
 
- - `-e WORDPRESS_DB_USER=...` (defaults to "root")
- - `-e WORDPRESS_DB_PASSWORD=...` (defaults to the value of the `MYSQL_ROOT_PASSWORD` environment variable from the linked mysql container)
- - `-e WORDPRESS_DB_NAME=...` (defaults to "wordpress")
- - `-e WORDPRESS_AUTH_KEY=...`, `-e WORDPRESS_SECURE_AUTH_KEY=...`, `-e WORDPRESS_LOGGED_IN_KEY=...`, `-e WORDPRESS_NONCE_KEY=...`, `-e WORDPRESS_AUTH_SALT=...`, `-e WORDPRESS_SECURE_AUTH_SALT=...`, `-e WORDPRESS_LOGGED_IN_SALT=...`, `-e WORDPRESS_NONCE_SALT=...` (default to unique random SHA1s)
+-	`-e WORDPRESS_DB_HOST=...` (defaults to the IP and port of the linked `mysql` container)
+-	`-e WORDPRESS_DB_USER=...` (defaults to "root")
+-	`-e WORDPRESS_DB_PASSWORD=...` (defaults to the value of the `MYSQL_ROOT_PASSWORD` environment variable from the linked `mysql` container)
+-	`-e WORDPRESS_DB_NAME=...` (defaults to "wordpress")
+-	`-e WORDPRESS_TABLE_PREFIX=...` (defaults to "", only set this when you need to override the default table prefix in wp-config.php)
+-	`-e WORDPRESS_AUTH_KEY=...`, `-e WORDPRESS_SECURE_AUTH_KEY=...`, `-e WORDPRESS_LOGGED_IN_KEY=...`, `-e WORDPRESS_NONCE_KEY=...`, `-e WORDPRESS_AUTH_SALT=...`, `-e WORDPRESS_SECURE_AUTH_SALT=...`, `-e WORDPRESS_LOGGED_IN_SALT=...`, `-e WORDPRESS_NONCE_SALT=...` (default to unique random SHA1s)
 
-If the `WORDPRESS_DB_NAME` specified does not already exist in the given MySQL container,  it will be created automatically upon container startup, provided that the `WORDPRESS_DB_USER` specified has the necessary permissions to create it.
+If the `WORDPRESS_DB_NAME` specified does not already exist on the given MySQL server, it will be created automatically upon startup of the `wordpress` container, provided that the `WORDPRESS_DB_USER` specified has the necessary permissions to create it.
 
 If you'd like to be able to access the instance from the host without the container's IP, standard port mappings can be used:
 
-    docker run --name some-wordpress --link some-mysql:mysql -p 8080:80 -d wordpress
+```console
+$ docker run --name some-wordpress --link some-mysql:mysql -p 8080:80 -d wordpress
+```
 
 Then, access it via `http://localhost:8080` or `http://host-ip:8080` in a browser.
 
-# Issues and Contributing
+If you'd like to use an external database instead of a linked `mysql` container, specify the hostname and port with `WORDPRESS_DB_HOST` along with the password in `WORDPRESS_DB_PASSWORD` and the username in `WORDPRESS_DB_USER` (if it is something other than `root`):
 
-If you have any questions about the image, please contact us through a [GitHub issue](https://github.com/docker-library/wordpress/issues) or in the IRC channel `#docker-library` on [Freenode](https://freenode.net).
+```console
+$ docker run --name some-wordpress -e WORDPRESS_DB_HOST=10.1.2.3:3306 \
+    -e WORDPRESS_DB_USER=... -e WORDPRESS_DB_PASSWORD=... -d wordpress
+```
 
-If you want to contribute, we are always thrilled to receive pull requests, and do our best to process them as fast as possible. Not sure if that typo is worth a pull request? Do it! We will appreciate it.
+## ... via [`docker-compose`](https://github.com/docker/compose)
 
-If your pull request is not accepted on the first try, don't be discouraged! If there's a problem with the implementation, hopefully you received feedback on what to improve.
+Example `docker-compose.yml` for `wordpress`:
 
-We recommend discussing your plans through a [GitHub issue](https://github.com/docker-library/wordpress/issues) before starting to code - especially for more ambitious contributions. This gives other contributors a chance to point you in the right direction, give feedback on your design, and maybe point out if someone else is working on the same thing.
+```yaml
+wordpress:
+  image: wordpress
+  links:
+    - db:mysql
+  ports:
+    - 8080:80
 
-Any significant improvement should be documented as a GitHub issue before anybody starts working on it. Please take a moment to check that an issue doesn't already exist documenting your bug report or improvement proposal. If it does, it never hurts to add a quick "+1" or "I have this problem too". This will help prioritize the most common problems and requests.
+db:
+  image: mariadb
+  environment:
+    MYSQL_ROOT_PASSWORD: example
+```
+
+Run `docker-compose up`, wait for it to initialize completely, and visit `http://localhost:8080` or `http://host-ip:8080`.
+
+## Adding additional libraries / extensions
+
+This image does not provide any additional PHP extensions or other libraries, even if they are required by popular plugins. There are an infinite number of possible plugins, and they potentially require any extension PHP supports. Including every PHP extension that exists would dramatically increase the image size.
+
+If you need additional PHP extensions, you'll need to create your own image `FROM` this one. The [documentation of the `php` image](https://github.com/docker-library/docs/blob/master/php/README.md#how-to-install-more-php-extensions) explains how to compile additional extensions. Additionally, the [`wordpress` Dockerfile](https://github.com/docker-library/wordpress/blob/618490d4bdff6c5774b84b717979bfe3d6ba8ad1/apache/Dockerfile#L5-L9) has an example of doing this.
+
+The following Docker Hub features can help with the task of keeping your dependent images up-to-date:
+
+-	[Automated Builds](https://docs.docker.com/docker-hub/builds/) let Docker Hub automatically build your Dockerfile each time you push changes to it.
+-	[Repository Links](https://docs.docker.com/docker-hub/builds/#repository-links) can ensure that your image is also rebuilt any time `wordpress` is updated.
+
+# Supported Docker versions
+
+This image is officially supported on Docker version 1.9.1.
+
+Support for older versions (down to 1.6) is provided on a best-effort basis.
+
+Please see [the Docker installation documentation](https://docs.docker.com/installation/) for details on how to upgrade your Docker daemon.
+
+# User Feedback
+
+## Documentation
+
+Documentation for this image is stored in the [`wordpress/` directory](https://github.com/docker-library/docs/tree/master/wordpress) of the [`docker-library/docs` GitHub repo](https://github.com/docker-library/docs). Be sure to familiarize yourself with the [repository's `README.md` file](https://github.com/docker-library/docs/blob/master/README.md) before attempting a pull request.
+
+## Issues
+
+If you have any problems with or questions about this image, please contact us through a [GitHub issue](https://github.com/docker-library/wordpress/issues).
+
+You can also reach many of the official image maintainers via the `#docker-library` IRC channel on [Freenode](https://freenode.net).
+
+## Contributing
+
+You are invited to contribute new features, fixes, or updates, large or small; we are always thrilled to receive pull requests, and do our best to process them as fast as we can.
+
+Before you start to code, we recommend discussing your plans through a [GitHub issue](https://github.com/docker-library/wordpress/issues), especially for more ambitious contributions. This gives other contributors a chance to point you in the right direction, give you feedback on your design, and help you find out if someone else is working on the same thing.

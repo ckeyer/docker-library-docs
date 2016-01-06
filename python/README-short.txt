@@ -1,1 +1,1 @@
-Python is a widely used general-purpose, high-level programming language.
+Python is an interpreted, interactive, object-oriented, open-source programming language.

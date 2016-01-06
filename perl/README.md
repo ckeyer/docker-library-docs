@@ -1,36 +1,74 @@
+# Supported tags and respective `Dockerfile` links
+
+-	[`latest`, `5`, `5.22`, `5.22.0` (*5.022.000-64bit/Dockerfile*)](https://github.com/perl/docker-perl/blob/r20150917.0/5.022.000-64bit/Dockerfile)
+-	[`5.20`, `5.20.3` (*5.020.003-64bit/Dockerfile*)](https://github.com/perl/docker-perl/blob/r20150917.0/5.020.003-64bit/Dockerfile)
+-	[`threaded`, `5-threaded`, `5.22-threaded`, `5.22.0-threaded` (*5.022.000-64bit,threaded/Dockerfile*)](https://github.com/perl/docker-perl/blob/r20150917.0/5.022.000-64bit,threaded/Dockerfile)
+-	[`5.20-threaded`, `5.20.3-threaded` (*5.020.003-64bit,threaded/Dockerfile*)](https://github.com/perl/docker-perl/blob/r20150917.0/5.020.003-64bit,threaded/Dockerfile)
+
+For more information about this image and its history, please see [the relevant manifest file (`library/perl`)](https://github.com/docker-library/official-images/blob/master/library/perl). This image is updated via pull requests to [the `docker-library/official-images` GitHub repo](https://github.com/docker-library/official-images).
+
+For detailed information about the virtual/transfer sizes and individual layers of each of the above supported tags, please see [the `perl/tag-details.md` file](https://github.com/docker-library/docs/blob/master/perl/tag-details.md) in [the `docker-library/docs` GitHub repo](https://github.com/docker-library/docs).
+
 # What is Perl?
-Perl is a family of high-level, general-purpose, interpreted, dynamic programming language. The Perl languages borrow freatures from other programming languages including C, shell scripting (sh), AWK, and sed.
+
+Perl is a high-level, general-purpose, interpreted, dynamic programming language. The Perl language borrows features from other programming languages, including C, shell scripting (sh), AWK, and sed.
 
 > [wikipedia.org/wiki/Perl](https://en.wikipedia.org/wiki/Perl)
 
+![logo](https://raw.githubusercontent.com/docker-library/docs/master/perl/logo.png)
+
 # How to use this image
 
-## Create a `Dockerfile` in your perl app project.
+## Create a `Dockerfile` in your Perl app project
 
-    FROM perl
-    ADD . /usr/src/myapp
-    WORKDIR /usr/src/myapp
-    CMD [ "perl", "./your-daemon-or-script.pl" ]
+```dockerfile
+FROM perl:5.20
+COPY . /usr/src/myapp
+WORKDIR /usr/src/myapp
+CMD [ "perl", "./your-daemon-or-script.pl" ]
+```
 
-Then build and run the docker image.
+Then, build and run the Docker image:
 
-    docker build -t my-perl-app
-    docker run -it --rm --name my-running-app my-perl-app
+```console
+$ docker build -t my-perl-app .
+$ docker run -it --rm --name my-running-app my-perl-app
+```
 
-## Run a single perl script.
+## Run a single Perl script
 
-For many single file projects, it may not be convenient to write a `Dockerfile` for your project. In such cases, you can run a perl script by using the perl docker image directly.
+For many simple, single file projects, you may find it inconvenient to write a complete `Dockerfile`. In such cases, you can run a Perl script by using the Perl Docker image directly:
 
-    docker run -it --rm --name my-running-script -v $(pwd):/usr/src/myapp -w /usr/src/myapp perl perl your-daemon-or-script.pl
+```console
+$ docker run -it --rm --name my-running-script -v "$PWD":/usr/src/myapp -w /usr/src/myapp perl:5.20 perl your-daemon-or-script.pl
+```
 
-# Issues and Contributing
+# License
 
-If you have any questions about the image, please contact us through a [GitHub issue](https://github.com/Perl/docker-perl/issues) or in the IRC channel `#docker-library` on [Freenode](https://freenode.net).
+View [license information](http://dev.perl.org/licenses/) for the software contained in this image.
 
-If you want to contribute, we are always thrilled to receive pull requests, and do our best to process them as fast as possible. Not sure if that typo is worth a pull request? Do it! We will appreciate it.
+# Supported Docker versions
 
-If your pull request is not accepted on the first try, don't be discouraged! If there's a problem with the implementation, hopefully you received feedback on what to improve.
+This image is officially supported on Docker version 1.9.1.
 
-We recommend discussing your plans through a [GitHub issue](https://github.com/Perl/docker-perl/issues) before starting to code - especially for more ambitious contributions. This gives other contributors a chance to point you in the right direction, give feedback on your design, and maybe point out if someone else is working on the same thing.
+Support for older versions (down to 1.6) is provided on a best-effort basis.
 
-Any significant improvement should be documented as a GitHub issue before anybody starts working on it. Please take a moment to check that an issue doesn't already exist documenting your bug report or improvement proposal. If it does, it never hurts to add a quick "+1" or "I have this problem too". This will help prioritize the most common problems and requests.
+Please see [the Docker installation documentation](https://docs.docker.com/installation/) for details on how to upgrade your Docker daemon.
+
+# User Feedback
+
+## Documentation
+
+Documentation for this image is stored in the [`perl/` directory](https://github.com/docker-library/docs/tree/master/perl) of the [`docker-library/docs` GitHub repo](https://github.com/docker-library/docs). Be sure to familiarize yourself with the [repository's `README.md` file](https://github.com/docker-library/docs/blob/master/README.md) before attempting a pull request.
+
+## Issues
+
+If you have any problems with or questions about this image, please contact us through a [GitHub issue](https://github.com/Perl/docker-perl/issues).
+
+You can also reach many of the official image maintainers via the `#docker-library` IRC channel on [Freenode](https://freenode.net).
+
+## Contributing
+
+You are invited to contribute new features, fixes, or updates, large or small; we are always thrilled to receive pull requests, and do our best to process them as fast as we can.
+
+Before you start to code, we recommend discussing your plans through a [GitHub issue](https://github.com/Perl/docker-perl/issues), especially for more ambitious contributions. This gives other contributors a chance to point you in the right direction, give you feedback on your design, and help you find out if someone else is working on the same thing.
